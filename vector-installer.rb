@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------------------
 
 # This chef script will install a previously downloaded evaluation edition of 
-# Actain Vector as installation VW in /opt/Actian/Vector.
+# Actain Vector as installation VE in /opt/Actian/Vector.
 
 #-------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ end
 
 file "/home/actian/.bashrc" do
   content <<-EOH
-[ -f ~/.ingVWsh ] && source ~/.ingVWsh
+[ -f ~/.ingVEsh ] && source ~/.ingVEsh
 EOH
   owner "actian"
   mode 00700
@@ -81,7 +81,7 @@ end
 
 bash 'run installer' do  
   code <<-EOH
-    #{installer} -acceptlicense /opt/Actian/Vector VW > /tmp/vhinst.log 2>&1
+    #{installer} -acceptlicense /opt/Actian/Vector VE > /tmp/vhinst.log 2>&1
   EOH
   not_if { File.exist?("/opt/Actian/Vector/ingres/files/errlog.log") }
 end

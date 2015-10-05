@@ -75,12 +75,15 @@ Vagrant.configure(2) do |config|
     sudo su - actian -c 'ingstart > /tmp/ingstart.log 2>&1; echo "Done"'
   SHELL
 
-# Download and run the DBT3 test suite 
+# Download the DBT3 test suite 
 
   config.vm.provision 'shell', privileged: true, inline: <<-SHELL
     cd /home/actian
     if [ ! -d VectorH-DBT3-Scripts ]; then
       sudo su - actian -c 'git clone -q https://github.com/ActianCorp/VectorH-DBT3-Scripts'
+    fi
+    if [ ! -d VectorTools ]; then
+        su actian -c 'git clone -q https://github.com/ActianCorp/VectorTools'
     fi
   SHELL
 
