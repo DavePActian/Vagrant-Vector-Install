@@ -56,7 +56,7 @@ end
 vector_package = `ls -t /vagrant/actian-vector*tgz | head -1`
 
 vector_install_loc = "/home/actian/installer/"
-vector_installation = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n" | sed "s/vagrant//" | sed "s/.tgz//"`
+vector_installation = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n" | sed "s@/@@g" | sed "s/vagrant//" | sed "s/.tgz//"`
 
 installer = ::File.join( vector_install_loc, vector_installation, "/express_install.sh" )
 authstring = ::File.join( vector_install_loc, vector_installation, "/authstring" )

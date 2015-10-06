@@ -38,7 +38,8 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
-  
+    # Give the VM an appropriate name
+    vb.name = "VectorEvaluationVM"
     # Customize the amount of memory on the VM 
     vb.memory = "4096"
   end
@@ -52,7 +53,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: true, inline: <<-SHELL
     echo never > /sys/kernel/mm/transparent_hugepage/enabled
     sed -i \'s/^SELINUX=.*$/SELINUX=disabled/\' /etc/selinux/config
-#    yum -y update
+    yum -y update
     yum -y install git libaio
   SHELL
 
@@ -65,7 +66,7 @@ Vagrant.configure(2) do |config|
 # Set the Actian passwd
 
   config.vm.provision 'shell', privileged: true, inline: <<-SHELL
-    sudo su - -c 'echo -e "actian\nactian" | passwd actian'
+    sudo su - -c 'echo -e "actian\nactian" | passwd actian > /tmp/passwd.log 2>&1'
   SHELL
 
 # Always Start Vector. Doesn't matter if already started on initial install
@@ -80,10 +81,10 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', privileged: true, inline: <<-SHELL
     cd /home/actian
     if [ ! -d VectorH-DBT3-Scripts ]; then
-      sudo su - actian -c 'git clone -q https://github.com/ActianCorp/VectorH-DBT3-Scripts'
+      su actian -c 'git clone -q https://github.com/ActianCorp/VectorH-DBT3-Scripts'
     fi
     if [ ! -d VectorTools ]; then
-        su actian -c 'git clone -q https://github.com/ActianCorp/VectorTools'
+      su actian -c 'git clone -q https://github.com/ActianCorp/VectorTools'
     fi
   SHELL
 
