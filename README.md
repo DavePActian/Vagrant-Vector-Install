@@ -26,3 +26,9 @@ A terminal screen will be displayed for the VM created.
 Logon as User: actian, Password : actian
 
 At this point the Vector environment is fully configured for you to use. 
+
+The DBT3 test scripts have been run. The following output fils are applicable:
+
+1. Run log - /tmp/load-run-dbt3-benchmark.log
+2. Run results - /actian/home/VectorH-DBT3-Scripts/run_performance.out
+

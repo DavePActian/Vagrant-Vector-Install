@@ -54,6 +54,10 @@ Vagrant.configure(2) do |config|
     echo never > /sys/kernel/mm/transparent_hugepage/enabled
     sed -i \'s/^SELINUX=.*$/SELINUX=disabled/\' /etc/selinux/config
     yum -y update
+    # Required for DBT3 Scripts
+    yum -y install git gcc
+    yum -y install git time
+    # Required for Vector
     yum -y install git libaio
   SHELL
 
@@ -76,15 +80,19 @@ Vagrant.configure(2) do |config|
     sudo su - actian -c 'ingstart > /tmp/ingstart.log 2>&1; echo "Done"'
   SHELL
 
-# Download the DBT3 test suite 
+# Give actian sudo access with NOPASSWD
+
+  config.vm.provision 'shell', privileged: true, inline: <<-SHELL
+    echo 'actian ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/actian
+  SHELL
+
+# Download and Run the DBT3 test suite 
 
   config.vm.provision 'shell', privileged: true, inline: <<-SHELL
     cd /home/actian
     if [ ! -d VectorH-DBT3-Scripts ]; then
       su actian -c 'git clone -q https://github.com/ActianCorp/VectorH-DBT3-Scripts'
-    fi
-    if [ ! -d VectorTools ]; then
-      su actian -c 'git clone -q https://github.com/ActianCorp/VectorTools'
+      su - actian -c 'cd VectorH-DBT3-Scripts;chmod 755 *.sh;./load-run-dbt3-benchmark.sh > /tmp/load-run-dbt3-benchmark.log 2>&1'
     fi
   SHELL
 

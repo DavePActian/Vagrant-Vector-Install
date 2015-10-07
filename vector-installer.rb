@@ -81,7 +81,7 @@ end
 
 bash 'run installer' do  
   code <<-EOH
-    #{installer} -acceptlicense /opt/Actian/Vector VE > /tmp/vhinst.log 2>&1
+    #{installer} -acceptlicense /opt/Actian/Vector VE > /tmp/vector_install.log 2>&1
   EOH
   not_if { File.exist?("/opt/Actian/Vector/ingres/files/errlog.log") }
 end
