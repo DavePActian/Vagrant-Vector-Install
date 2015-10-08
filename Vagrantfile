@@ -55,10 +55,11 @@ Vagrant.configure(2) do |config|
     sed -i \'s/^SELINUX=.*$/SELINUX=disabled/\' /etc/selinux/config
     yum -y update
     # Required for DBT3 Scripts
-    yum -y install git gcc
-    yum -y install git time
+    yum -y install git gcc time
     # Required for Vector
-    yum -y install git libaio
+    yum -y install libaio
+    # Required for Vector rpm 
+    yum -y install libX11 libXext libXi libXrender libXtst alsa-lib
   SHELL
 
 # Install Vector. Vector download must be in same location as this Vagrant file.

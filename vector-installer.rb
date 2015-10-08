@@ -53,28 +53,37 @@ end
 
 # Variables for files and locations used
 
-vector_package = `ls -t /vagrant/actian-vector*tgz | head -1`
+vector_package_with_path   = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n"`
+vector_publickey_with_path = `ls -t /vagrant/actian-vector*asc 2> /dev/null | head -1 | tr -d "\n"`
 
 vector_install_loc = "/home/actian/installer/"
 vector_installation = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n" | sed "s@/@@g" | sed "s/vagrant//" | sed "s/.tgz//"`
+vector_publickey = `ls -t /vagrant/actian-vector*asc 2> /dev/null | head -1 | tr -d "\n" | sed "s@/@@g" | sed "s/vagrant//" | sed "s/.tgz//"`
 
-installer = ::File.join( vector_install_loc, vector_installation, "/express_install.sh" )
+installer  = ::File.join( vector_install_loc, vector_installation, "/express_install.sh" )
 authstring = ::File.join( vector_install_loc, vector_installation, "/authstring" )
+publickey  = ::File.join( vector_install_loc, vector_installation, "/publickey" )
 
 # Untar the Vector installation package
 
-execute "tar -xzf #{vector_package}" do
+execute "tar -xzf #{vector_package_with_path}" do
   cwd "#{vector_install_loc}"
   not_if { File.exist?("#{installer}") }
 end
 
-# Copy over the authstring
+# Copy over the authstring - If it exists
 
-file "#{authstring}" do
-  mode 0755
-  content ::File.open("/vagrant/authstring").read
-  action :create
-  not_if { File.exist?("#{authstring}") }
+execute "if [ -f '/vagrant/authstring' ]; then cp /vagrant/authstring #{authstring}; fi" do end
+
+# Copy over the rpm Public Key - If it exists
+
+execute "if [ '#{vector_publickey_with_path}' != '' ]; then cp #{vector_publickey_with_path} #{publickey}; fi" do end
+
+# Install the Public Key if applicable 
+
+execute "rpm --import #{publickey}" do
+  cwd "#{vector_install_loc}"
+  only_if { File.exist?("#{publickey}") }
 end
 
 # Install Vector
