@@ -15,17 +15,24 @@ To achieve this there are certain mandatory pre-requisites that must be fullfile
 This package was tested using Vagrant 1.7.4, CentOS 6.7 and Oracle Virtual Box 5.0.4 / Microsoft
 Azure free trial.
 
+
 This package by default uses Oracle Virtual Box as the provider. 
 However,  it is also configured to be used with the Microsoft Azure cloud service.
     e.g. vagrant up --provider=azure
+
 To use the Azure provider 2 addtional Vagrant installs are requiredi. Commands are:
+
     1. vagrant plugin install vagrant-azure 
     2. vagrant box add azure https://github.com/msopentech/vagrant-azure/raw/master/dummy.box
+
 First thing to know is that unlike Virtual Box you can't have a Vagrant file for the Azure provider that works for everyone. There are details specific to you and you only these being:
+
     1. Your Azure Subscription ID;
     2. Your certificate:
         - The .pem file.
-A separate illustrated document is available to guide you through the Azure subscription process and how to setup Azure and the Vagrant file changes required which are related to your personal subscription.
+
+A separate illustrated word document is available to guide you through the Azure subscription process and how to setup Azure and the Vagrant file changes required which are related to your personal subscription.
+
 
 To get your Vector installation up and running:
 
@@ -42,8 +49,9 @@ To get your Vector installation up and running:
     6. If you chose the RPM binaries package also copy the Public key file to the directory.
     7. From a command prompt at the directory you created run "vagrant up"
 
-A terminal screen will be displayed for the VM created.
-The complete configuration can take up to 10 minutes dependent on the speed of your network.
+A terminal screen will be displayed for the Virtual Box VM created. For Azure reference the associated word document on a suggested terminal access method.
+
+The complete configuration for Virtual Box can take up to 5 minutes dependent on the speed of your network.  If using the Microsoft Azure provider be patient as in the author's experience it can take a little longer!
 
 When complete logon as User: actian, Password : actian
 
@@ -61,6 +69,3 @@ The approach to using 'Chef' in the Vagrantfile may seem strange as the installa
 This was intentional to create a generic script that would work for providers Oracle Virtual Box and Azure.
 Using Azure 'chef_apply' will fail installing Chef. Even when Chef is manually installed to circumvent this, it will then fail applying a Recipe even though it appears to complete successfully.
 
-
-If using the Microsoft Azure provider be patient as in the author's experience it can be a little
-slow.
