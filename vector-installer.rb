@@ -18,71 +18,54 @@
 
 # This chef script will install a previously downloaded evaluation edition of 
 # Actain Vector as installation VE in /opt/Actian/Vector.
+#     - Either native package (ingbuild) or RPM is acceptable.
+
+# The following files are required by this script and should have previously 
+# been downloaded from Actian into the folder from which Vagrant was launched:
+#    1. Vector Evaluation Installation download. This can be the native package
+#       manager (ingbuild) or RPM format binaries:
+#         e.g. actian-vector-4.2.1-190-eval-linux-ingbuild-x86_64.tgz
+#              actian-vector-4.2.1-190-eval-linux-rpm-x86_64.tgz
+#    2. Vector authorisation string in a file called 'authstring'
+#       This will have been emailed to you when you registered for the evaluation
+#       at http://bigdata.actian.com/Vector
+#    3. If you downloaded the RPM the associated Public Key.
+#         e.g. actian-vector-4.2.1-190-eval-linux-rpm-x86_64-key.asc
 
 #-------------------------------------------------------------------------------
 
 
-# Setup the required user and user structure                   
-
-user "actian" do
-  uid "400"
-  home "/home/actian"
-  manage_home true
-  shell "/bin/bash"
-end
-
-directory "/home/actian/installer" do
-  owner "actian"
-  mode 00700
-  recursive true
-end
-
-directory "/home/actian/.ssh" do
-  owner "actian"
-  mode 00700
-  recursive true
-end
-
-file "/home/actian/.bashrc" do
-  content <<-EOH
-[ -f ~/.ingVEsh ] && source ~/.ingVEsh
-EOH
-  owner "actian"
-  mode 00700
-end
-
 # Variables for files and locations used
 
-vector_package_with_path   = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n"`
-vector_publickey_with_path = `ls -t /vagrant/actian-vector*asc 2> /dev/null | head -1 | tr -d "\n"`
+vector_publickey_with_path = `ls -t /tmp/actian-vector*.asc 2> /dev/null | head -1 | tr -d "\n"`
+vector_package_with_path   = `ls -t /tmp/actian-vector*.tgz 2> /dev/null | head -1 | tr -d "\n"`
 
-vector_install_loc = "/home/actian/installer/"
-vector_installation = `ls -t /vagrant/actian-vector*tgz | head -1 | tr -d "\n" | sed "s@/@@g" | sed "s/vagrant//" | sed "s/.tgz//"`
-vector_publickey = `ls -t /vagrant/actian-vector*asc 2> /dev/null | head -1 | tr -d "\n" | sed "s@/@@g" | sed "s/vagrant//" | sed "s/.tgz//"`
+vector_install_loc  = "/home/actian/installer/"
+vector_installation = `ls -t /tmp/actian-vector*.tgz | head -1 | tr -d "\n" | sed "s@/tmp/@@g" | sed "s/.tgz//"`
 
 installer  = ::File.join( vector_install_loc, vector_installation, "/express_install.sh" )
 authstring = ::File.join( vector_install_loc, vector_installation, "/authstring" )
 publickey  = ::File.join( vector_install_loc, vector_installation, "/publickey" )
 
-# Untar the Vector installation package
+# Untar the Vector installation package - Can be ingbuild or RPM
 
-execute "tar -xzf #{vector_package_with_path}" do
+execute "tar -xzf /tmp/actian-vector*.tgz" do
   cwd "#{vector_install_loc}"
   not_if { File.exist?("#{installer}") }
 end
 
-# Copy over the authstring - If it exists
+# Copy over the authstring - Should always exist
 
-execute "if [ -f '/vagrant/authstring' ]; then cp /vagrant/authstring #{authstring}; fi" do end
+execute "cp /tmp/authstring #{authstring}" do end
 
-# Copy over the rpm Public Key - If it exists
+# Copy over the RPM Public Key - If it exists
 
 execute "if [ '#{vector_publickey_with_path}' != '' ]; then cp #{vector_publickey_with_path} #{publickey}; fi" do end
 
 # Install the Public Key if applicable 
 
 execute "rpm --import #{publickey}" do
-  cwd "#{vector_install_loc}"
+  cwd "#{vector_installation}"
   only_if { File.exist?("#{publickey}") }
 end
 
