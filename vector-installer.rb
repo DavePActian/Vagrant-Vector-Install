@@ -46,6 +46,7 @@ vector_installation = `ls -t /tmp/actian-vector*.tgz | head -1 | tr -d "\n" | se
 installer  = ::File.join( vector_install_loc, vector_installation, "/express_install.sh" )
 authstring = ::File.join( vector_install_loc, vector_installation, "/authstring" )
 publickey  = ::File.join( vector_install_loc, vector_installation, "/publickey" )
+rpm_loc    = ::File.join( vector_install_loc, vector_installation )
 
 # Untar the Vector installation package - Can be ingbuild or RPM
 
@@ -65,7 +66,7 @@ execute "if [ '#{vector_publickey_with_path}' != '' ]; then cp #{vector_publicke
 # Install the Public Key if applicable 
 
 execute "rpm --import #{publickey}" do
-  cwd "#{vector_installation}"
+  cwd "#{rpm_loc}"
   only_if { File.exist?("#{publickey}") }
 end
 
@@ -73,7 +74,7 @@ end
 
 bash 'run installer' do  
   code <<-EOH
-    #{installer} -acceptlicense /opt/Actian/Vector VE > /tmp/vector_install.log 2>&1
+    #{installer} -acceptlicense /opt/Actian/Vector VH > /tmp/vector_install.log 2>&1
   EOH
   not_if { File.exist?("/opt/Actian/Vector/ingres/files/errlog.log") }
 end
